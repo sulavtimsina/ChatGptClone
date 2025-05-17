@@ -9,5 +9,5 @@ import javax.inject.Inject
 class HistoryViewModel @Inject constructor(
     repo: ConversationRepository
 ) : ViewModel() {
-    val conversations = repo.conversations     // expose Flow to UI
+    val conversations = repo.conversations
 }
