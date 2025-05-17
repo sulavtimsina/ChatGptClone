@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("kapt")
 }
 
 android {
@@ -56,4 +57,34 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // DI
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
+
+    // Network & JSON
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.moshi)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.sse)
+    implementation(libs.moshi.kotlin)
+    // Markdown & shimmer
+//    implementation(libs.richtext.common)
+//    implementation(libs.richtext.ui)
+//    implementation(libs.richtext.markdown)
+//    implementation(libs.accompanist.placeholder)
+
+    // Images
+    implementation(libs.coil3.coil.compose)
+
+    // Voice
+//    implementation(libs.mlkit.speech.recognition)
+
+    // Test (add more later)
+    testImplementation(kotlin("test"))
 }
