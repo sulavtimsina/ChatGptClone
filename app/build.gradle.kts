@@ -1,4 +1,6 @@
 import org.gradle.kotlin.dsl.implementation
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,6 +20,18 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        // Load API keys from local.properties
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(FileInputStream(localPropertiesFile))
+
+            // Add the API key to BuildConfig
+            buildConfigField("String", "OPENAI_API_KEY", "\"${properties.getProperty("OPENAI_API_KEY", "")}\"")
+        } else {
+            buildConfigField("String", "OPENAI_API_KEY", "\"\"") // Empty default if file doesn't exist
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -40,10 +54,14 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
 dependencies {
+    implementation (libs.kotlinx.serialization.json)
+    implementation (libs.okhttp.v493)
+
     implementation (libs.accompanist.permissions)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -71,6 +89,10 @@ dependencies {
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
 
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences.core)
+
     // Network & JSON
     implementation(libs.retrofit)
     implementation(libs.retrofit.moshi)
@@ -79,17 +101,8 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.richtext.ui.material3)
 
-    // Markdown & shimmer
-//    implementation(libs.richtext.common)
-//    implementation(libs.richtext.ui)
-//    implementation(libs.richtext.markdown)
-//    implementation(libs.accompanist.placeholder)
-
     // Images
     implementation(libs.coil3.coil.compose)
-
-    // Voice
-//    implementation(libs.mlkit.speech.recognition)
 
     // Test (add more later)
     testImplementation(kotlin("test"))

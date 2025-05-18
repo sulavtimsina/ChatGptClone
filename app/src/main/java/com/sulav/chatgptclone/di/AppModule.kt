@@ -2,12 +2,15 @@ package com.sulav.chatgptclone.di
 
 import android.content.Context
 import androidx.room.Room
+import com.sulav.chatgptclone.data.AppSettings
 import com.sulav.chatgptclone.data.local.AppDatabase
 import com.sulav.chatgptclone.data.local.ConversationDao
 import com.sulav.chatgptclone.repository.AiService
+import com.sulav.chatgptclone.repository.ConfigurableAiService
 import com.sulav.chatgptclone.repository.ConversationRepository
 import com.sulav.chatgptclone.repository.ConversationRepositoryImpl
 import com.sulav.chatgptclone.repository.FakeAiService
+import com.sulav.chatgptclone.repository.RealAiService
 import com.sulav.chatgptclone.utils.TextToSpeechHelper
 import dagger.Module
 import dagger.Provides
@@ -29,7 +32,18 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFakeAiService(): AiService = FakeAiService()
+    fun provideFake(): FakeAiService = FakeAiService()
+    @Provides
+    @Singleton
+    fun provideReal(): RealAiService = RealAiService()
+
+    @Provides
+    @Singleton
+    fun provideAiService(
+        fake: FakeAiService,
+        real: RealAiService,
+        settings: AppSettings
+    ): AiService = ConfigurableAiService(fake, real, settings)
 
     @Provides
     @Singleton
@@ -38,7 +52,8 @@ object AppModule {
         ai: AiService
     ): ConversationRepository = ConversationRepositoryImpl(dao, ai)
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     fun provideTts(@ApplicationContext ctx: Context) = TextToSpeechHelper(ctx)
 
 }
