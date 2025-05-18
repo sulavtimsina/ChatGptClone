@@ -8,6 +8,7 @@ import com.sulav.chatgptclone.repository.AiService
 import com.sulav.chatgptclone.repository.ConversationRepository
 import com.sulav.chatgptclone.repository.ConversationRepositoryImpl
 import com.sulav.chatgptclone.repository.FakeAiService
+import com.sulav.chatgptclone.utils.TextToSpeechHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,5 +37,8 @@ object AppModule {
         dao: ConversationDao,
         ai: AiService
     ): ConversationRepository = ConversationRepositoryImpl(dao, ai)
+
+    @Provides @Singleton
+    fun provideTts(@ApplicationContext ctx: Context) = TextToSpeechHelper(ctx)
 
 }

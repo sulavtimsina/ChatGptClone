@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Send
@@ -41,6 +42,7 @@ import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.ui.chat.components.MessageBubble
 import com.sulav.chatgptclone.ui.chat.components.ThinkingShimmer
 import com.sulav.chatgptclone.ui.history.HistoryDrawerContent
+import com.sulav.chatgptclone.ui.navigation.Destinations
 import com.sulav.chatgptclone.ui.shared.ChatTopAppBar
 import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
 import com.sulav.chatgptclone.viewmodel.ChatViewModel
@@ -53,6 +55,7 @@ fun ChatScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
 
     val input by vm.input.collectAsState()
     val msgs by vm.messages.collectAsState()
@@ -72,14 +75,15 @@ fun ChatScreen(
                 ChatTopAppBar(
                     title = "ChatGPT",
                     onMenu = { scope.launch { drawerState.open() } },
-                    onNewChat = { navController.navigate("chat") }
+                    onNewChat = { navController.navigate(Destinations.CHAT) }
                 )
             },
             bottomBar = {
                 BottomInputBar(
                     text = input,
                     onTextChange = vm::onInputChange,
-                    onSend = vm::onSendClicked
+                    onSend = vm::onSendClicked,
+                    onVoiceClicked = { navController.navigate(Destinations.VOICE) }
                 )
             }
         ) { inner ->
@@ -108,7 +112,8 @@ fun ChatScreen(
 private fun BottomInputBar(
     text: String,
     onTextChange: (String) -> Unit,
-    onSend: () -> Unit
+    onSend: () -> Unit,
+    onVoiceClicked: () -> Unit = {}
 ) {
     val focusRequester = remember { FocusRequester() }
     Row(
@@ -125,16 +130,17 @@ private fun BottomInputBar(
                 .focusRequester(focusRequester),
             placeholder = { Text("Ask anything") }
         )
+        IconButton(onClick = onSend) {
+            Icon(Icons.Default.Send, contentDescription = "Send")
+        }
         OutlinedButton(
-            onClick = { /* voice TODO */ },
+            onClick = { onVoiceClicked() },
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier.size(48.dp)
         ) {
             Icon(Icons.Filled.Phone, contentDescription = null)
         }
-        IconButton(onClick = onSend) {
-            Icon(Icons.Default.Send, contentDescription = "Send")
-        }
+
     }
 }
 

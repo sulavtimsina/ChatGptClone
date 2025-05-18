@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sulav.chatgptclone.ui.history.components.ConversationItem
-import com.sulav.chatgptclone.ui.history.components.SearchBar
+import com.sulav.chatgptclone.ui.history.components.SearchBarWithPencil
 import com.sulav.chatgptclone.ui.shared.ChatTopAppBar
 import com.sulav.chatgptclone.viewmodel.HistoryViewModel
 
@@ -46,7 +47,7 @@ fun HistoryScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            SearchBar(query = query, onQueryChange = { query = it })
+            SearchBarWithPencil (query = query, onQueryChange = { query = it }, onPencilClick = {})
             Spacer(Modifier.height(16.dp))
             LazyColumn {
                 items(conversations.filter { it.title.contains(query, true) }) { conv ->

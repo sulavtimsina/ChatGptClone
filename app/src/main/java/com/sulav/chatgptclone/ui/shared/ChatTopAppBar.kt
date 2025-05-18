@@ -37,7 +37,7 @@ fun ChatTopAppBar(
         },
         modifier = Modifier
             .statusBarsPadding()
-            .height(56.dp)
+//            .height(56.dp)
     )
 }
 
