@@ -5,12 +5,15 @@ import com.sulav.chatgptclone.data.local.ConversationEntity
 import com.sulav.chatgptclone.data.local.MessageEntity
 import com.sulav.chatgptclone.model.Conversation
 import com.sulav.chatgptclone.model.Message
+import com.sulav.chatgptclone.model.Message.Role
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+
+private const val MAX_CTX = 10
 
 @Singleton
 class ConversationRepositoryImpl @Inject constructor(
@@ -56,9 +59,15 @@ class ConversationRepositoryImpl @Inject constructor(
             )
         )
 
-        /* 3. stream tokens */
+        /* 3.  ---- gather context (oldest → newest) ---- */
+        val history = dao.getMessages(conversationId)
+            .map { list -> list.map { it.toDomain() }.reversed() } // oldest first
+            .first()
+            .takeLast(MAX_CTX)
+
+        /* 4. stream tokens */
         val builder = StringBuilder()
-        ai.sendAndStreamReply(userText).collect { token ->
+        ai.streamReplyWithHistory(history).collect { token ->
             builder.append(token)
             dao.updateMessage(
                 MessageEntity(

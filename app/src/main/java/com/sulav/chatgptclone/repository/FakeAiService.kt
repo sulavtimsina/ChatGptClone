@@ -1,5 +1,6 @@
 package com.sulav.chatgptclone.repository
 
+import com.sulav.chatgptclone.model.Message
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -30,7 +31,10 @@ class FakeAiService : AiService {
         "Consider paging when lists grow beyond a few hundred rows."
     )
 
-    override fun sendAndStreamReply(prompt: String): Flow<String> = flow {
+    override fun streamReplyWithHistory(history: List<Message>): Flow<String> =
+        sendAndStreamReply()
+
+    private fun sendAndStreamReply(): Flow<String> = flow {
         /* 0️⃣ simulate thinking latency */
         delay(400)
 

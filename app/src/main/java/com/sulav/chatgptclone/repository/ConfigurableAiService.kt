@@ -1,6 +1,8 @@
 package com.sulav.chatgptclone.repository
 
+import android.R.attr.prompt
 import com.sulav.chatgptclone.data.AppSettings
+import com.sulav.chatgptclone.model.Message
 import kotlinx.coroutines.flow.*
 
 import javax.inject.Inject
@@ -13,9 +15,9 @@ class ConfigurableAiService @Inject constructor(
     private val settings: AppSettings
 ) : AiService {
 
-    override fun sendAndStreamReply(prompt: String): Flow<String> =
+    override fun streamReplyWithHistory(history: List<Message>): Flow<String> =
         settings.useRealAi.take(1).flatMapLatest { useReal ->
-            if (useReal) real.sendAndStreamReply(prompt)
-            else fake.sendAndStreamReply(prompt)
+            if (useReal) real.streamReplyWithHistory(history)
+            else fake.streamReplyWithHistory(history)
         }
 }
