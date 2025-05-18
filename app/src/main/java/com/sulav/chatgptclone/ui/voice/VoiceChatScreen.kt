@@ -56,8 +56,8 @@ private fun ScreenContent(
     phase: VoiceChatViewModel.Phase,
     onStop: () -> Unit
 ) {
-    val isActive = phase == VoiceChatViewModel.Phase.Listening
-    val mode = if (phase == VoiceChatViewModel.Phase.Speaking)
+    val isActive = phase == VoiceChatViewModel.Phase.UserSpeaking
+    val mode = if (phase == VoiceChatViewModel.Phase.AiSpeaking)
         VoiceIndicatorMode.EQUALIZER else VoiceIndicatorMode.YARN_BALL
 
     val scope = rememberCoroutineScope()
@@ -89,7 +89,7 @@ private fun ScreenContent(
             Text(
                 text = when (phase) {
                     VoiceChatViewModel.Phase.WaitingAi -> "Listening to AI…"
-                    VoiceChatViewModel.Phase.Speaking -> "AI is speaking…"
+                    VoiceChatViewModel.Phase.AiSpeaking -> "AI is speaking…"
                     else -> partial.ifBlank { "Speak now…" }
                 },
                 style = MaterialTheme.typography.headlineSmall

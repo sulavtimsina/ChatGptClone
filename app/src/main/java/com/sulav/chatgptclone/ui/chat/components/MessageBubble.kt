@@ -1,30 +1,34 @@
 package com.sulav.chatgptclone.ui.chat.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sulav.chatgptclone.model.Message
 
 @Composable
 fun MessageBubble(
-    text: String,
-    isUser: Boolean,
-    modifier: Modifier = Modifier
+    message: Message,
+    onCopy: () -> Unit = {},
+    onPlay: () -> Unit = {}
 ) {
-    val color =
-        if (isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val contentColor =
-        if (isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-    androidx.compose.material3.Surface(
-        color = color,
-        contentColor = contentColor,
-        shape = MaterialTheme.shapes.medium,
-        modifier = modifier
-    ) {
-        androidx.compose.material3.Text(
-            text = text,
-            modifier = Modifier.padding(12.dp)
-        )
+    val (bg, fg) = if (message.role == Message.Role.USER)
+        MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
+    else
+        MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurface
+
+    Surface(color = bg, contentColor = fg, shape = MaterialTheme.shapes.medium) {
+        Column(Modifier.padding(12.dp)) {
+            if (message.role == Message.Role.ASSISTANT)
+                MarkdownMessage(message.content)
+            else
+                androidx.compose.material3.Text(message.content)
+            if (message.role == Message.Role.ASSISTANT) {
+                MessageActions(onCopy = onCopy, onPlay = onPlay)
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ composeBom = "2025.05.00"
 # --- DI, DB, Network ---
 hilt           = "2.56.2"
 moshiKotlin = "1.15.0"
+richtextUiMaterial3 = "0.17.0"
 room           = "2.7.1"
 retrofit       = "2.11.0"
 okhttp         = "4.12.0"
@@ -60,6 +61,7 @@ hilt-compiler        = { group = "com.google.dagger", name = "hilt-android-compi
 
 # Room
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshiKotlin" }
+richtext-ui-material3 = { module = "com.halilibo.compose-richtext:richtext-ui-material3", version.ref = "richtextUiMaterial3" }
 room-runtime         = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx             = { group = "androidx.room", name = "room-ktx",     version.ref = "room" }
 room-compiler        = { group = "androidx.room", name = "room-compiler",version.ref = "room" }

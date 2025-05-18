@@ -12,9 +12,11 @@ import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.repository.ConversationRepository
 import com.sulav.chatgptclone.utils.TextToSpeechHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +27,7 @@ class VoiceChatViewModel @Inject constructor(
     private val tts: TextToSpeechHelper
 ) : AndroidViewModel(app) {
 
-    enum class Phase { Idle, Listening, WaitingAi, Speaking }
+    enum class Phase { Idle, Ready, UserSpeaking, WaitingAi, AiSpeaking }
 
     private val _phase = MutableStateFlow(Phase.Idle)
     val phase: StateFlow<Phase> = _phase
@@ -34,42 +36,83 @@ class VoiceChatViewModel @Inject constructor(
     val partial: StateFlow<String> = _partial
 
     private val sr: SpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(app)
+    private val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+    }
 
-    private var currentConv: Long? = null
+    private var convId: Long? = null
 
     init {
         sr.setRecognitionListener(object : RecognitionListener {
             override fun onReadyForSpeech(bundle: Bundle?) {
-                _phase.value = Phase.Listening
+                println("!! ready for speech")
+                _phase.value = Phase.Ready
             }
 
-            override fun onResults(bundle: Bundle?) {
-                val result = bundle?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    ?.firstOrNull() ?: return
-                sendToAi(result)
+            override fun onBeginningOfSpeech() {
+                println("!! beginning of speech")
+                _phase.value = Phase.UserSpeaking
+            }
+
+            override fun onResults(b: Bundle?) {
+                val text = b?.getStringArrayList(
+                    SpeechRecognizer.RESULTS_RECOGNITION
+                )?.firstOrNull().orEmpty()
+                if (text.isNotBlank()) {
+                    _partial.value = ""
+                    processUserUtterance(text)
+                } else restartListening()
             }
 
             override fun onRmsChanged(rms: Float) {
-                rmsAmplitude.value = rms
+            }
+
+            override fun onEndOfSpeech() {
+                println("!! end of speech")
+                _phase.value = Phase.WaitingAi
             }
 
             override fun onPartialResults(b: Bundle?) {
+                println("!! partial results")
                 _partial.value = b?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                     ?.firstOrNull() ?: ""
             }
 
             /* unused callbacks */
-            override fun onError(i: Int) {}
-            override fun onBeginningOfSpeech() {
-                println("!! beginning of speech")
+            override fun onError(i: Int) {
+                println("!! on error")
+                _phase.value = Phase.Idle
             }
-            override fun onEndOfSpeech() {}
+
             override fun onBufferReceived(p0: ByteArray?) {}
             override fun onEvent(p0: Int, p1: Bundle?) {}
         })
+        restartListening()
     }
 
-    val rmsAmplitude = MutableStateFlow(0f)        // 0-10 range
+    private fun processUserUtterance(userText: String) {
+        viewModelScope.launch {
+            val id = if (convId == null) {                       // first round
+                repo.startConversation(userText).also { convId = it }
+            } else {
+                repo.send(convId!!, userText)                    // returns Unit
+                convId!!                                         // keep existing id
+            }
+
+            /* ----- wait until AI streaming finishes, then speak ----- */
+            val aiReply = repo.messages(id)
+                .mapNotNull { list -> list.find { it.role == Message.Role.ASSISTANT && it.content.isNotBlank() } }
+                .first()                                         // first non-empty assistant row
+                .content
+
+            _phase.value = Phase.AiSpeaking
+            tts.speak(aiReply) {
+                _phase.value = Phase.Ready
+                restartListening()                               // open mic again
+            }
+        }
+    }
 
     fun startListening() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -82,30 +125,20 @@ class VoiceChatViewModel @Inject constructor(
         sr.startListening(intent)
     }
 
+    private fun restartListening() {
+        if (_phase.value == Phase.AiSpeaking) return           // hang on, TTS still talking
+        viewModelScope.launch {
+            delay(300)                      // let audio focus settle
+            sr.startListening(intent)
+        }
+    }
+
     fun stop() {
         sr.stopListening(); _phase.value = Phase.Idle
     }
 
-    private fun sendToAi(userText: String) {
-        _partial.value = ""
-        _phase.value = Phase.WaitingAi
-        viewModelScope.launch {
-            val id = currentConv ?: repo.startConversation(userText).also { currentConv = it }
-            repo.send(id, userText)           // streams AI reply into DB
-            _phase.value = Phase.Speaking
-        }
-        viewModelScope.launch {
-            val id = currentConv ?: repo.startConversation(userText).also { currentConv = it }
-            /*  stream reply so we can TTS it  */
-            repo.send(id, userText)          // already streams into DB
-            val aiReply = repo.messages(id).first()         // newest assistant text
-                .first { it.role == Message.Role.ASSISTANT }.content
-            _phase.value = Phase.Speaking
-            tts.speak(aiReply) { _phase.value = Phase.Idle }   // callback when done
-        }
-    }
-
     override fun onCleared() {
-        super.onCleared(); sr.destroy()
+        super.onCleared();
+        sr.destroy()
     }
 }

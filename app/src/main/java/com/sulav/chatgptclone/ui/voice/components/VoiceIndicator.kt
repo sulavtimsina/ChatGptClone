@@ -11,8 +11,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -55,8 +53,8 @@ fun VoiceIndicator(
     val transitionProgress = remember { Animatable(0f) }
 
     // Base rotation speed and pulse size
-    val baseRotationSpeed = 60f // degrees per second
-    val basePulseSize = 0.8f
+    val baseRotationSpeed = 20f // degrees per second
+    val basePulseSize = 0.4f
 
     // Animation values
     val pulseFactor = remember { Animatable(basePulseSize) }
@@ -153,16 +151,6 @@ fun VoiceIndicator(
     )
 
     Box(
-//        modifier = modifier
-//            .clickable(
-//                interactionSource = remember { MutableInteractionSource() },
-//                indication = null
-//            ) {
-//                mode = when (mode) {
-//                    VoiceIndicatorMode.YARN_BALL -> VoiceIndicatorMode.EQUALIZER
-//                    VoiceIndicatorMode.EQUALIZER -> VoiceIndicatorMode.YARN_BALL
-//                }
-//            },
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -289,7 +277,8 @@ fun VoiceIndicatorPreview() {
         LaunchedEffect(Unit) {
             while (true) {
                 isActive = !isActive
-                if(mode == VoiceIndicatorMode.YARN_BALL) mode = VoiceIndicatorMode.EQUALIZER else mode = VoiceIndicatorMode.YARN_BALL
+                if (mode == VoiceIndicatorMode.YARN_BALL) mode =
+                    VoiceIndicatorMode.EQUALIZER else mode = VoiceIndicatorMode.YARN_BALL
                 delay(3000)
             }
         }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.repository.ConversationRepository
+import com.sulav.chatgptclone.utils.TextToSpeechHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -15,7 +16,7 @@ class ChatViewModel @Inject constructor(
     private val repo: ConversationRepository,
     savedState: SavedStateHandle
 ) : ViewModel() {
-
+    @Inject lateinit var ttsHelper: TextToSpeechHelper
     /* ---------- nav arg ---------- */
     private val conversationId: Long? =
         savedState.get<Long>("conversationId")

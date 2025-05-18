@@ -77,6 +77,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.sse)
     implementation(libs.moshi.kotlin)
+    implementation(libs.richtext.ui.material3)
+
     // Markdown & shimmer
 //    implementation(libs.richtext.common)
 //    implementation(libs.richtext.ui)

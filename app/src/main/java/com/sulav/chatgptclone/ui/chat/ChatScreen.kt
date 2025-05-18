@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -33,18 +32,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.ui.chat.components.MessageBubble
 import com.sulav.chatgptclone.ui.chat.components.ThinkingShimmer
 import com.sulav.chatgptclone.ui.history.HistoryDrawerContent
 import com.sulav.chatgptclone.ui.navigation.Destinations
 import com.sulav.chatgptclone.ui.shared.ChatTopAppBar
 import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
+import com.sulav.chatgptclone.utils.ClipboardHelper
 import com.sulav.chatgptclone.viewmodel.ChatViewModel
 import kotlinx.coroutines.launch
 
@@ -55,7 +56,7 @@ fun ChatScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
+    val ctx = LocalContext.current
 
     val input by vm.input.collectAsState()
     val msgs by vm.messages.collectAsState()
@@ -87,6 +88,7 @@ fun ChatScreen(
                 )
             }
         ) { inner ->
+            val viewModelStoreOwner = LocalViewModelStoreOwner.current
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -97,9 +99,11 @@ fun ChatScreen(
                 if (thinking) item { ThinkingShimmer() }
                 items(msgs) { m ->
                     MessageBubble(
-                        text = m.content,
-                        isUser = m.role == Message.Role.USER,
-                        modifier = Modifier.fillMaxWidth()
+                        message = m,
+                        onCopy = { ClipboardHelper.copy(ctx, m.content) },
+                        onPlay = { viewModelStoreOwner?.let {
+                            vm.ttsHelper.speak(m.content){}
+                        }}
                     )
                     Spacer(Modifier.height(8.dp))
                 }
