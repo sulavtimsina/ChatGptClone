@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Send
@@ -101,9 +100,11 @@ fun ChatScreen(
                     MessageBubble(
                         message = m,
                         onCopy = { ClipboardHelper.copy(ctx, m.content) },
-                        onPlay = { viewModelStoreOwner?.let {
-                            vm.ttsHelper.speak(m.content){}
-                        }}
+                        onPlay = {
+                            viewModelStoreOwner?.let {
+                                vm.ttsHelper.speak(m.content) {}
+                            }
+                        }
                     )
                     Spacer(Modifier.height(8.dp))
                 }

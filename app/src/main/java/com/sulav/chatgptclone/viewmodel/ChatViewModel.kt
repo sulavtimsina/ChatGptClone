@@ -17,33 +17,29 @@ class ChatViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ViewModel() {
     @Inject lateinit var ttsHelper: TextToSpeechHelper
-    /* ---------- nav arg ---------- */
-    private val conversationId: Long? =
-        savedState.get<Long>("conversationId")
 
-    /* ---------- input ---------- */
+    /* ------------ reactive conversation id ------------- */
+    private val _convId = MutableStateFlow<Long?>(savedState["conversationId"])
+    private val convId: StateFlow<Long?> get() = _convId
+
+    /* ------------ input field ------------- */
     private val _input = MutableStateFlow("")
     val input: StateFlow<String> = _input
-    fun onInputChange(t: String) {
-        _input.value = t
-    }
+    fun onInputChange(t: String) { _input.value = t }
 
-    /* ---------- thinking flag ---------- */
+    /* ------------ thinking flag ------------- */
     private val _isThinking = MutableStateFlow(false)
     val isThinking: StateFlow<Boolean> = _isThinking
 
-    /* ---------- messages ---------- */
-    private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    val messages: StateFlow<List<Message>> = _messages
-
-    init {
-        conversationId?.let { id ->
-            viewModelScope.launch {
-                repo.messages(id).collect { _messages.value = it }
-            }
+    /* ------------ live messages ------------- */
+    val messages: StateFlow<List<Message>> = convId
+        .flatMapLatest { id ->
+            if (id == null) flowOf(emptyList())
+            else repo.messages(id)
         }
-    }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    /* ------------ send ------------- */
     fun onSendClicked() {
         val text = _input.value.trim()
         if (text.isEmpty()) return
@@ -51,10 +47,13 @@ class ChatViewModel @Inject constructor(
         _isThinking.value = true
 
         viewModelScope.launch {
-            if (conversationId == null) {
-                repo.startConversation(text)
+            val id = convId.value
+            if (id == null) {
+                /* first message ever -> create conversation THEN start streaming */
+                val newId = repo.startConversation(text)
+                _convId.value = newId              // 🔑  start collection immediately
             } else {
-                repo.send(conversationId, text)
+                repo.send(id, text)
             }
             _isThinking.value = false
         }
