@@ -18,6 +18,7 @@ fun MarkdownMessage(text: String) {
 @Composable
 @Preview
 fun MarkdownMessagePreview() {
-    ChatGPTCloneTheme()
-    { MarkdownMessage("**This is bold text**") }
+    ChatGPTCloneTheme() {
+        MarkdownMessage("**This is bold text**")
+    }
 }

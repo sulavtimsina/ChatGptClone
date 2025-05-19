@@ -10,4 +10,6 @@
     <string name = "speaking_with_user">AI is speaking…</string>
     <string name = "speak_now">Speak Now</string>
     <string name="use_live_llm">Use Live LLM</string>
+    <string name="a11y_play_message">play message</string>
+    <string name="a11y_copy_message_to_clipboard">copy message to clipboard</string>
 </resources>

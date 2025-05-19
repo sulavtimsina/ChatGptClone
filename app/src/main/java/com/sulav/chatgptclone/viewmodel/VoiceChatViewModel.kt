@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.repository.ConversationRepository
 import com.sulav.chatgptclone.ui.shared.UiEvent
+import com.sulav.chatgptclone.utils.NetworkMonitor
 import com.sulav.chatgptclone.utils.TextToSpeechHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -27,7 +28,8 @@ import javax.inject.Inject
 class VoiceChatViewModel @Inject constructor(
     app: Application,
     private val repo: ConversationRepository,
-    private val tts: TextToSpeechHelper
+    private val tts: TextToSpeechHelper,
+    private val net: NetworkMonitor
 ) : AndroidViewModel(app) {
 
     enum class Phase { Idle, Ready, UserSpeaking, WaitingAi, AiSpeaking }
@@ -99,6 +101,12 @@ class VoiceChatViewModel @Inject constructor(
 
     private fun processUserUtterance(userText: String) {
         viewModelScope.launch {
+            if (!net.isOnline.first()) {
+                _events.emit(UiEvent.Snackbar("No internet – try later"))
+                _phase.value = Phase.Ready
+                restartListening()
+                return@launch
+            }
             try {
                 val id = if (convId == null) {
                     repo.startConversation(userText).also { convId = it }

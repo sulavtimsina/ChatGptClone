@@ -9,6 +9,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.sulav.chatgptclone.R
 import com.sulav.chatgptclone.ui.theme.Smaller
 
@@ -17,12 +18,19 @@ fun MessageActions(
     onCopy: () -> Unit,
     onPlay: () -> Unit
 ) {
+    // TODO: Add pause button to pause playback
     Row(Modifier.padding(top = Smaller)) {
         IconButton(onClick = onCopy) {
-            Icon(painterResource(id = R.drawable.outline_content_copy_24), "copy message to clipboard") //TODO: add copy icon here
+            Icon(
+                painter = painterResource(id = R.drawable.outline_content_copy_24),
+                contentDescription = stringResource(R.string.a11y_copy_message_to_clipboard)
+            )
         }
         IconButton(onClick = onPlay) {
-            Icon(Icons.Default.PlayArrow, null) // TODO: add play icon here
+            Icon(
+                imageVector = Icons.Default.PlayArrow,
+                contentDescription = stringResource(R.string.a11y_play_message)
+            )
         }
     }
 }

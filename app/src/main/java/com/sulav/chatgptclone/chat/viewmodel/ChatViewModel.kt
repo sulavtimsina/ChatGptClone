@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.repository.ConversationRepository
 import com.sulav.chatgptclone.ui.shared.UiError
+import com.sulav.chatgptclone.utils.NetworkMonitor
 import com.sulav.chatgptclone.utils.TextToSpeechHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
@@ -21,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val repo: ConversationRepository,
+    private val net: NetworkMonitor,
     savedState: SavedStateHandle
 ) : ViewModel() {
     @Inject
@@ -61,12 +64,15 @@ class ChatViewModel @Inject constructor(
         _isThinking.value = true
 
         viewModelScope.launch {
+            if (!net.isOnline.first()) {
+                _error.value = UiError.NoInternet
+                return@launch
+            }
             val id = convId.value?.takeIf { it >= 0 }
             try {
                 if (id == null) {
-                    /* first message ever -> create conversation THEN start streaming */
                     val newId = repo.startConversation(text)
-                    _convId.value = newId              // 🔑  start collection immediately
+                    _convId.value = newId
                 } else {
                     repo.send(id, text)
                 }
@@ -80,5 +86,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun clearError() { _error.value = null }
+    fun clearError() {
+        _error.value = null
+    }
 }
