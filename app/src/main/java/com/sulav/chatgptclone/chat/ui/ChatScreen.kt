@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -34,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -148,14 +152,21 @@ private fun BottomInputBar(
             .padding(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        val scrollState = rememberScrollState()
+
         OutlinedTextField(
             value = text,
             onValueChange = onTextChange,
             modifier = Modifier
                 .weight(1f)
-                .focusRequester(focusRequester),
-            placeholder = { Text("Ask anything") }
+                .focusRequester(focusRequester)
+                .verticalScroll(scrollState), // enable scroll when text exceeds 10 lines
+            placeholder = { Text("Ask anything") },
+            maxLines = 10, // grow up to 10 lines
+            singleLine = false,
+            textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp) // optional
         )
+
         IconButton(onClick = onSend) {
             Icon(Icons.Default.Send, contentDescription = "Send")
         }
