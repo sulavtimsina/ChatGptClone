@@ -7,8 +7,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.sulav.chatgptclone.model.Message
+import com.sulav.chatgptclone.ui.theme.Default
 
 @Composable
 fun MessageBubble(
@@ -22,7 +22,7 @@ fun MessageBubble(
         MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurface
 
     Surface(color = bg, contentColor = fg, shape = MaterialTheme.shapes.medium) {
-        Column(Modifier.padding(12.dp)) {
+        Column(Modifier.padding(Default)) {
             if (message.role == Message.Role.ASSISTANT)
                 MarkdownMessage(message.content)
             else

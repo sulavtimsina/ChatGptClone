@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -36,22 +35,23 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sulav.chatgptclone.R
-import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.chat.components.MessageBubble
 import com.sulav.chatgptclone.chat.components.ThinkingShimmer
-import com.sulav.chatgptclone.history.ui.HistoryDrawerContent
+import com.sulav.chatgptclone.chat.viewmodel.ChatViewModel
+import com.sulav.chatgptclone.history.ui.HistoryDrawerScreen
+import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.navigation.Destinations
 import com.sulav.chatgptclone.ui.shared.ChatTopAppBar
 import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
+import com.sulav.chatgptclone.ui.theme.Medium
+import com.sulav.chatgptclone.ui.theme.OutlinedButtonSize
+import com.sulav.chatgptclone.ui.theme.Small
+import com.sulav.chatgptclone.ui.theme.zero
 import com.sulav.chatgptclone.utils.ClipboardHelper
-import com.sulav.chatgptclone.chat.viewmodel.ChatViewModel
-import com.sulav.chatgptclone.history.ui.HistoryDrawerScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -120,7 +120,7 @@ fun ChatContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(inner),
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(Medium),
                 reverseLayout = true
             ) {
                 if (isThinking) item { ThinkingShimmer() }
@@ -130,7 +130,7 @@ fun ChatContent(
                         onCopy = { onCopy(message.content) },
                         onPlay = { onPlay(message.content) }
                     )
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(Small))
                 }
             }
         }
@@ -149,8 +149,8 @@ private fun BottomInputBar(
     Row(
         Modifier
             .navigationBarsPadding()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(Small),
+        horizontalArrangement = Arrangement.spacedBy(Small)
     ) {
         val scrollState = rememberScrollState()
 
@@ -164,7 +164,6 @@ private fun BottomInputBar(
             placeholder = { Text("Ask anything") },
             maxLines = 10, // grow up to 10 lines
             singleLine = false,
-            textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp) // optional
         )
 
         IconButton(onClick = onSend) {
@@ -172,8 +171,8 @@ private fun BottomInputBar(
         }
         OutlinedButton(
             onClick = { onVoiceClicked() },
-            contentPadding = PaddingValues(0.dp),
-            modifier = Modifier.size(48.dp)
+            contentPadding = PaddingValues(zero),
+            modifier = Modifier.size(OutlinedButtonSize)
         ) {
             Icon(
                 painterResource(id = R.drawable.outline_mic_24),

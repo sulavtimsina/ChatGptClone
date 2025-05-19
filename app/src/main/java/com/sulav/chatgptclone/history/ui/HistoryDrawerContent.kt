@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sulav.chatgptclone.history.components.ConversationItem
@@ -27,6 +26,8 @@ import com.sulav.chatgptclone.history.components.SearchBarWithPencil
 import com.sulav.chatgptclone.history.viewmodel.HistoryViewModel
 import com.sulav.chatgptclone.model.Conversation
 import com.sulav.chatgptclone.navigation.Destinations
+import com.sulav.chatgptclone.ui.theme.Medium
+import com.sulav.chatgptclone.ui.theme.Small
 
 @Composable
 fun HistoryDrawerScreen(
@@ -67,7 +68,7 @@ fun HistoryDrawerContent(
             onPencilClick = {
                 navigateToChat()
             })
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(Medium))
         LazyColumn(modifier = Modifier.fillMaxHeight()) {
             items(conversations.filter { it.title.contains(query, true) }) { conv ->
                 ConversationItem(title = conv.title) {
@@ -80,7 +81,7 @@ fun HistoryDrawerContent(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 8.dp)
+                .padding(bottom = Small)
         ) {
             Text("Use Live LLM")
             Spacer(Modifier.weight(1f))

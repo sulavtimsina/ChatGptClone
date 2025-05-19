@@ -22,13 +22,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sulav.chatgptclone.permissions.RequireRecordAudio
+import com.sulav.chatgptclone.ui.theme.ExtraLarge
+import com.sulav.chatgptclone.viewmodel.VoiceChatViewModel
 import com.sulav.chatgptclone.voice.components.VoiceIndicator
 import com.sulav.chatgptclone.voice.components.VoiceIndicatorMode
-import com.sulav.chatgptclone.viewmodel.VoiceChatViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -93,7 +93,7 @@ private fun VoiceScreenContent(
                 onModeChange = {},
                 mode = mode,
             )
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(ExtraLarge))
             Text(
                 text = when (phase) {
                     VoiceChatViewModel.Phase.WaitingAi -> "Listening to AI…"

@@ -15,8 +15,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
+import com.sulav.chatgptclone.ui.theme.ShimmerHeight
+import com.sulav.chatgptclone.ui.theme.ShimmerWidth
 
 @Composable
 fun ThinkingShimmer() {
@@ -32,7 +33,7 @@ fun ThinkingShimmer() {
     )
     Box(
         modifier = Modifier
-            .size(80.dp, 20.dp)
+            .size(ShimmerWidth, ShimmerHeight)
             .alpha(alpha)
             .background(MaterialTheme.colorScheme.surfaceVariant)
     )
