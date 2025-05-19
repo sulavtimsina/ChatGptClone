@@ -11,6 +11,7 @@ import com.sulav.chatgptclone.repository.ConversationRepository
 import com.sulav.chatgptclone.repository.ConversationRepositoryImpl
 import com.sulav.chatgptclone.repository.FakeAiService
 import com.sulav.chatgptclone.repository.RealAiService
+import com.sulav.chatgptclone.utils.NetworkMonitor
 import com.sulav.chatgptclone.utils.TextToSpeechHelper
 import dagger.Module
 import dagger.Provides
@@ -33,6 +34,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideFake(): FakeAiService = FakeAiService()
+
     @Provides
     @Singleton
     fun provideReal(): RealAiService = RealAiService()
@@ -55,5 +57,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideTts(@ApplicationContext ctx: Context) = TextToSpeechHelper(ctx)
+
+    @Provides
+    @Singleton
+    fun provideNetworkMonitor(@ApplicationContext ctx: Context) =
+        NetworkMonitor(ctx)
 
 }

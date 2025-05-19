@@ -22,9 +22,12 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -47,6 +50,7 @@ import com.sulav.chatgptclone.history.ui.HistoryDrawerScreen
 import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.navigation.Destinations
 import com.sulav.chatgptclone.ui.shared.ChatTopAppBar
+import com.sulav.chatgptclone.ui.shared.UiError
 import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
 import com.sulav.chatgptclone.ui.theme.Medium
 import com.sulav.chatgptclone.ui.theme.OutlinedButtonSize
@@ -64,6 +68,19 @@ fun ChatScreen(
     val messages by viewModel.messages.collectAsState()
     val thinking by viewModel.isThinking.collectAsState()
     val ctx = LocalContext.current
+    val err by viewModel.error.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(err) {
+        err?.let {
+            val msg = when (it) {
+                UiError.NoInternet -> "No internet. Message saved; will retry."
+                is UiError.Generic -> it.msg
+            }
+            snackbarHostState.showSnackbar(msg)
+            viewModel.clearError()                                 // reset in VM
+        }
+    }
 
     ChatContent(
         navController = navController,
@@ -74,7 +91,8 @@ fun ChatScreen(
         onSendClicked = viewModel::onSendClicked,
         onVoiceClicked = { navController.navigate(Destinations.VOICE) },
         onCopy = { ClipboardHelper.copy(ctx, it) },
-        onPlay = { viewModel.ttsHelper.speak(it) {} }
+        onPlay = { viewModel.ttsHelper.speak(it) {} },
+        snackbarHostState = snackbarHostState
     )
 }
 
@@ -88,7 +106,8 @@ fun ChatContent(
     onSendClicked: () -> Unit,
     onVoiceClicked: () -> Unit,
     onCopy: (String) -> Unit,
-    onPlay: (String) -> Unit
+    onPlay: (String) -> Unit,
+    snackbarHostState: SnackbarHostState,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -108,6 +127,7 @@ fun ChatContent(
                     scope.launch { drawerState.open() }
                 }
             },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             bottomBar = {
                 BottomInputBar(
                     text = input,
@@ -137,7 +157,6 @@ fun ChatContent(
         }
     }
 }
-
 
 @Composable
 private fun BottomInputBar(

@@ -14,11 +14,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sulav.chatgptclone.R
 import com.sulav.chatgptclone.permissions.RequireRecordAudio
+import com.sulav.chatgptclone.ui.shared.UiEvent
 import com.sulav.chatgptclone.ui.theme.ExtraLarge
 import com.sulav.chatgptclone.viewmodel.VoiceChatViewModel
 import com.sulav.chatgptclone.voice.components.VoiceIndicator
@@ -38,15 +42,25 @@ fun VoiceChatScreen(
     navController: NavController,
     viewModel: VoiceChatViewModel = hiltViewModel()
 ) {
+    val snackbarHost = remember { SnackbarHostState() }
+
     val phase by viewModel.phase.collectAsState()
     val partial by viewModel.partial.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { ev ->
+            when (ev) {
+                is UiEvent.Snackbar -> snackbarHost.showSnackbar(ev.message)
+            }
+        }
+    }
     RequireRecordAudio(
         onGranted = {
             LaunchedEffect(Unit) { viewModel.startListening() }
             VoiceScreenContent(
                 partial = partial,
                 phase = phase,
+                snackbarHostState = snackbarHost,
                 navigateBack = { navController.popBackStack() },
                 onStop = { viewModel.stop() }
             )
@@ -60,6 +74,7 @@ fun VoiceChatScreen(
 private fun VoiceScreenContent(
     partial: String,
     phase: VoiceChatViewModel.Phase,
+    snackbarHostState: SnackbarHostState,
     navigateBack: () -> Unit,
     onStop: () -> Unit
 ) {
@@ -81,7 +96,8 @@ private fun VoiceScreenContent(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { p ->
         Column(
             Modifier

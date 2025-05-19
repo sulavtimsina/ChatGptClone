@@ -5,11 +5,13 @@ import com.sulav.chatgptclone.data.local.ConversationEntity
 import com.sulav.chatgptclone.data.local.MessageEntity
 import com.sulav.chatgptclone.model.Conversation
 import com.sulav.chatgptclone.model.Message
-import com.sulav.chatgptclone.model.Message.Role
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -67,16 +69,28 @@ class ConversationRepositoryImpl @Inject constructor(
 
         /* 4. stream tokens */
         val builder = StringBuilder()
-        ai.streamReplyWithHistory(history).collect { token ->
-            builder.append(token)
+        try {
+            ai.streamReplyWithHistory(history).collect { token ->
+                builder.append(token)
+                dao.updateMessage(
+                    MessageEntity(
+                        id = assistantId,
+                        conversationId = conversationId,
+                        role = "assistant",
+                        content = builder.toString()
+                    )
+                )
+            }
+        } catch (e: IOException) {
             dao.updateMessage(
                 MessageEntity(
                     id = assistantId,
                     conversationId = conversationId,
                     role = "assistant",
-                    content = builder.toString()
+                    content = "⚠️ Network error, retry later."
                 )
             )
+            throw e
         }
 
         /* 4. if first assistant answer, auto-title conversation */

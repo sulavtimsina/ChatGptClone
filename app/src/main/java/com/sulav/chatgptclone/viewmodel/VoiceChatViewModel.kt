@@ -10,10 +10,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.repository.ConversationRepository
+import com.sulav.chatgptclone.ui.shared.UiEvent
 import com.sulav.chatgptclone.utils.TextToSpeechHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
@@ -34,6 +37,9 @@ class VoiceChatViewModel @Inject constructor(
 
     private val _partial = MutableStateFlow("")
     val partial: StateFlow<String> = _partial
+
+    private val _events = MutableSharedFlow<UiEvent>()
+    val events: SharedFlow<UiEvent> = _events
 
     private val sr: SpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(app)
     private val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -93,23 +99,31 @@ class VoiceChatViewModel @Inject constructor(
 
     private fun processUserUtterance(userText: String) {
         viewModelScope.launch {
-            val id = if (convId == null) {                       // first round
-                repo.startConversation(userText).also { convId = it }
-            } else {
-                repo.send(convId!!, userText)                    // returns Unit
-                convId!!                                         // keep existing id
-            }
+            try {
+                val id = if (convId == null) {
+                    repo.startConversation(userText).also { convId = it }
+                } else {
+                    repo.send(convId!!, userText)
+                    convId!!
+                }
 
-            /* ----- wait until AI streaming finishes, then speak ----- */
-            val aiReply = repo.messages(id)
-                .mapNotNull { list -> list.find { it.role == Message.Role.ASSISTANT && it.content.isNotBlank() } }
-                .first()                                         // first non-empty assistant row
-                .content
+                // ── wait for first non-empty assistant message ──
+                val aiReply = repo.messages(id)
+                    .mapNotNull { list ->
+                        list.firstOrNull { it.role == Message.Role.ASSISTANT && it.content.isNotBlank() }
+                    }
+                    .first()
+                    .content
 
-            _phase.value = Phase.AiSpeaking
-            tts.speak(aiReply) {
+                _phase.value = Phase.AiSpeaking
+                tts.speak(aiReply) {
+                    _phase.value = Phase.Ready
+                    restartListening()
+                }
+            } catch (e: Exception) {                      // ← handles no-internet or others
+                _events.emit(UiEvent.Snackbar("Network error – try again when online"))
                 _phase.value = Phase.Ready
-                restartListening()                               // open mic again
+                restartListening()
             }
         }
     }
