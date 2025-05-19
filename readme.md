@@ -72,12 +72,12 @@ OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 3. **Run**
 
-bash
-Copy
-Edit
+```bash
 ./gradlew installDebug
-Toggle between Fake ↔︎ OpenAI
+```
 
+4. **Fake vs Real LLM**
+Toggle between Fake ↔︎ OpenAI
 Open the drawer ➜ switch “Use Live LLM”.
 
 ## 🟡 Remaining TODO / Known Limitations
@@ -95,25 +95,12 @@ Open the drawer ➜ switch “Use Live LLM”.
 | **Offline Sync** | Messages queued offline are stored locally but **not auto-retried** once connection returns. |
 
 ## Known Limitations
-No automatic retry queue for offline messages yet
+- No automatic retry queue for offline messages yet
+- **TTS amplitude is approximated (Android doesn’t expose live PCM RMS)**
+- Image markdown not rendered
 
-TTS amplitude is approximated (Android doesn’t expose live PCM RMS)
-
-Image markdown not rendered
-
-✅ Pre-submission Checklist
-./gradlew assembleRelease – release build installs & runs ✔️
-
-detekt / ktlint clean ✔️
-
-API key kept out of VCS ✔️
-
-Replace placeholder screenshots in /docs/screens/ ⬜
 
 📄 License
-nginx
-Copy
-Edit
 Apache License 2.0
 Built with ❤️ by Sulav Timsina
 
@@ -127,4 +114,3 @@ Built with ❤️ by Sulav Timsina
 4. Push a clean commit history (`main` or `submit` branch).  
 5. Include this `README.md` at repository root.
 
-You’re ready – good luck with the interview!

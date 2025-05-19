@@ -64,6 +64,20 @@ fun HistoryDrawerContent(
     var query by remember { mutableStateOf("") }
     ModalDrawerSheet()
     {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = Small)
+        ) {
+            Text(stringResource(R.string.use_live_llm))
+            Spacer(Modifier.weight(1f))
+            Switch(
+                checked = useReal,
+                onCheckedChange = onUseRealChange
+            )
+        }
+
         SearchBarWithPencil(
             query = query,
             onQueryChange = { query = it },
@@ -79,18 +93,6 @@ fun HistoryDrawerContent(
             }
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = Small)
-        ) {
-            Text(stringResource(R.string.use_live_llm))
-            Spacer(Modifier.weight(1f))
-            Switch(
-                checked = useReal,
-                onCheckedChange = onUseRealChange
-            )
-        }
+
     }
 }
