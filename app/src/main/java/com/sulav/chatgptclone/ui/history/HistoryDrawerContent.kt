@@ -2,8 +2,10 @@ package com.sulav.chatgptclone.ui.history
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ModalDrawerSheet
@@ -20,15 +22,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.sulav.chatgptclone.data.AppSettings
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.sulav.chatgptclone.ui.history.HistoryDrawerContent
 import com.sulav.chatgptclone.ui.history.components.ConversationItem
 import com.sulav.chatgptclone.ui.history.components.SearchBarWithPencil
+import com.sulav.chatgptclone.ui.navigation.Destinations
 import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
 import com.sulav.chatgptclone.viewmodel.HistoryViewModel
 import com.sulav.chatgptclone.viewmodel.SettingsViewModel
 
+//@Composable
+//fun HistoryDrawerScreen(
+//    vm: HistoryViewModel = hiltViewModel(),
+//    settingsViewModel: SettingsViewModel = hiltViewModel(),
+//    onConversationClick: (Long) -> Unit
+//) {
+//    HistoryDrawerContent(vm, settingsViewModel, onConversationClick)
+//}
+
 @Composable
 fun HistoryDrawerContent(
+    navController: NavController,
     vm: HistoryViewModel = hiltViewModel(),
     settingsViewModel: SettingsViewModel = hiltViewModel(),
     onConversationClick: (Long) -> Unit,
@@ -38,9 +53,13 @@ fun HistoryDrawerContent(
     val conversations by vm.conversations.collectAsState(initial = emptyList())
     ModalDrawerSheet()
     {
-        SearchBarWithPencil(query = query, onQueryChange = { query = it }, onPencilClick = {})
+        SearchBarWithPencil(query = query, onQueryChange = { query = it }, onPencilClick = {
+            navController.navigate(
+                Destinations.CHAT
+            )
+        })
         Spacer(Modifier.height(16.dp))
-        LazyColumn {
+        LazyColumn(modifier = Modifier.fillMaxHeight()) {
             items(conversations.filter { it.title.contains(query, true) }) { conv ->
                 ConversationItem(title = conv.title) {
                     onConversationClick(conv.id)
@@ -50,7 +69,9 @@ fun HistoryDrawerContent(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp)
         ) {
             Text("Use Live LLM")
             Spacer(Modifier.weight(1f))
@@ -61,13 +82,14 @@ fun HistoryDrawerContent(
         }
     }
 }
-
-@Preview
-@Composable
-fun HistoryDrawerContentPreview() {
-    ChatGPTCloneTheme {
-        HistoryDrawerContent(
-            onConversationClick = {}
-        )
-    }
-}
+//
+//@Preview
+//@Composable
+//fun HistoryDrawerContentPreview() {
+//    ChatGPTCloneTheme {
+//        val navController = rememberNavController()
+//        HistoryDrawerContent(navController = navController)(
+//            onConversationClick = {}
+//        )
+//    }
+//}

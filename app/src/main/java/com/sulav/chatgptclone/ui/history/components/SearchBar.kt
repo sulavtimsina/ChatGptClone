@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 fun SearchBarWithPencil(
     query: String,
     onQueryChange: (String) -> Unit,
-    onPencilClick: () -> Unit
+    onPencilClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(start = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(

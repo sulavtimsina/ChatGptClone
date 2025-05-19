@@ -59,9 +59,11 @@ android {
 }
 
 dependencies {
+    implementation (libs.markdownview.android)
+
     implementation (libs.kotlinx.serialization.json)
     implementation (libs.okhttp.v493)
-
+//    implementation(libs.markwon.core)
     implementation (libs.accompanist.permissions)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -1,6 +1,5 @@
 package com.sulav.chatgptclone.ui.navigation
 
-import android.R.attr.type
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -10,13 +9,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.sulav.chatgptclone.ui.chat.ChatScreen
-import com.sulav.chatgptclone.ui.history.HistoryScreen
 import com.sulav.chatgptclone.ui.voice.VoiceChatScreen
 
 object Destinations {
     const val CHAT = "chat"
-    const val HISTORY = "history"
-    const val VOICE  = "voice"
+    const val VOICE = "voice"
 }
 
 @Composable
@@ -44,7 +41,6 @@ fun ChatNavHost(
             ChatScreen(navController)
         }
 
-        composable(Destinations.HISTORY) { HistoryScreen(navController) }
-        composable(Destinations.VOICE)   { VoiceChatScreen(navController) }
+        composable(Destinations.VOICE) { VoiceChatScreen(navController) }
     }
 }

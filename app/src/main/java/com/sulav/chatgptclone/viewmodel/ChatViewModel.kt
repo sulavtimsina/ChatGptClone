@@ -19,7 +19,7 @@ class ChatViewModel @Inject constructor(
     @Inject lateinit var ttsHelper: TextToSpeechHelper
 
     /* ------------ reactive conversation id ------------- */
-    private val _convId = MutableStateFlow<Long?>(savedState["conversationId"])
+    private val _convId = MutableStateFlow<Long?>(savedState.get<Long>("conversationId")?.takeIf { it >= 0 } )
     private val convId: StateFlow<Long?> get() = _convId
 
     /* ------------ input field ------------- */
@@ -47,7 +47,7 @@ class ChatViewModel @Inject constructor(
         _isThinking.value = true
 
         viewModelScope.launch {
-            val id = convId.value
+            val id = convId.value?.takeIf { it >= 0 }
             if (id == null) {
                 /* first message ever -> create conversation THEN start streaming */
                 val newId = repo.startConversation(text)

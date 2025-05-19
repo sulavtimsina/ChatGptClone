@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -32,12 +31,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sulav.chatgptclone.R
 import com.sulav.chatgptclone.ui.chat.components.MessageBubble
 import com.sulav.chatgptclone.ui.chat.components.ThinkingShimmer
 import com.sulav.chatgptclone.ui.history.HistoryDrawerContent
@@ -64,7 +65,7 @@ fun ChatScreen(
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            HistoryDrawerContent { convId ->
+            HistoryDrawerContent(navController) { convId ->
                 scope.launch { drawerState.close() }
                 navController.navigate("chat?conversationId=$convId") // same route with arg
             }
@@ -73,10 +74,8 @@ fun ChatScreen(
         Scaffold(
             topBar = {
                 ChatTopAppBar(
-                    title = "ChatGPT",
-                    onMenu = { scope.launch { drawerState.open() } },
-                    onNewChat = { navController.navigate(Destinations.CHAT) }
-                )
+                    title = "ChatGPT"
+                ) { scope.launch { drawerState.open() } }
             },
             bottomBar = {
                 BottomInputBar(
@@ -143,7 +142,10 @@ private fun BottomInputBar(
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier.size(48.dp)
         ) {
-            Icon(Icons.Filled.Phone, contentDescription = null)
+            Icon(
+                painterResource(id = R.drawable.outline_mic_24),
+                contentDescription = "open real time voice chat"
+            )
         }
 
     }
