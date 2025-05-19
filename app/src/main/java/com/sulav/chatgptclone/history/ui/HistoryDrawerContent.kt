@@ -19,8 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.sulav.chatgptclone.R
 import com.sulav.chatgptclone.history.components.ConversationItem
 import com.sulav.chatgptclone.history.components.SearchBarWithPencil
 import com.sulav.chatgptclone.history.viewmodel.HistoryViewModel
@@ -83,7 +85,7 @@ fun HistoryDrawerContent(
                 .fillMaxWidth()
                 .padding(bottom = Small)
         ) {
-            Text("Use Live LLM")
+            Text(stringResource(R.string.use_live_llm))
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = useReal,

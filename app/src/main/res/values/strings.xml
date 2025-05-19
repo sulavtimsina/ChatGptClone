@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Chat GPT Clone</string>
+    <string name = "top_bar_title">Jump GPT</string>
+    <string name = "ask_anything">Ask Anything</string>
+    <string name = "send">Send</string>
+    <string name = "open_voice_chat">Open real time voice chat</string>
+    <string name = "copy_to_clipboard">Copy to Clipboard</string>
+    <string name = "microphone_denied">Microphone permission denied</string>
+    <string name = "listening_to_AI">Listening to AI…</string>
+    <string name = "speaking_with_user">AI is speaking…</string>
+    <string name = "speak_now">Speak Now</string>
+    <string name="use_live_llm">Use Live LLM</string>
 </resources>

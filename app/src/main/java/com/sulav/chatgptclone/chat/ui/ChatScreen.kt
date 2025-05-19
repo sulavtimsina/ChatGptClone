@@ -34,6 +34,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -103,7 +104,7 @@ fun ChatContent(
     ) {
         Scaffold(
             topBar = {
-                ChatTopAppBar(title = "ChatGPT") {
+                ChatTopAppBar(title = stringResource(R.string.top_bar_title)) {
                     scope.launch { drawerState.open() }
                 }
             },
@@ -161,13 +162,22 @@ private fun BottomInputBar(
                 .weight(1f)
                 .focusRequester(focusRequester)
                 .verticalScroll(scrollState), // enable scroll when text exceeds 10 lines
-            placeholder = { Text("Ask anything") },
+            placeholder = {
+                Text(
+                    stringResource(
+                        R.string.ask_anything
+                    )
+                )
+            },
             maxLines = 10, // grow up to 10 lines
             singleLine = false,
         )
 
         IconButton(onClick = onSend) {
-            Icon(Icons.Default.Send, contentDescription = "Send")
+            Icon(
+                imageVector = Icons.Default.Send,
+                contentDescription = stringResource(R.string.send)
+            )
         }
         OutlinedButton(
             onClick = { onVoiceClicked() },
@@ -176,7 +186,7 @@ private fun BottomInputBar(
         ) {
             Icon(
                 painterResource(id = R.drawable.outline_mic_24),
-                contentDescription = "open real time voice chat"
+                contentDescription = stringResource(R.string.open_voice_chat)
             )
         }
 

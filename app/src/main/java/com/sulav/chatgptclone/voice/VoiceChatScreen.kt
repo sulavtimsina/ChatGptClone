@@ -22,8 +22,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.sulav.chatgptclone.R
 import com.sulav.chatgptclone.permissions.RequireRecordAudio
 import com.sulav.chatgptclone.ui.theme.ExtraLarge
 import com.sulav.chatgptclone.viewmodel.VoiceChatViewModel
@@ -49,7 +51,7 @@ fun VoiceChatScreen(
                 onStop = { viewModel.stop() }
             )
         },
-        onDenied = { Text("Microphone permission denied") }
+        onDenied = { Text(stringResource(R.string.microphone_denied)) }
     )
 }
 
@@ -96,9 +98,11 @@ private fun VoiceScreenContent(
             Spacer(Modifier.height(ExtraLarge))
             Text(
                 text = when (phase) {
-                    VoiceChatViewModel.Phase.WaitingAi -> "Listening to AI…"
-                    VoiceChatViewModel.Phase.AiSpeaking -> "AI is speaking…"
-                    else -> partial.ifBlank { "Speak now…" }
+                    VoiceChatViewModel.Phase.WaitingAi -> stringResource(R.string.listening_to_AI)
+                    VoiceChatViewModel.Phase.AiSpeaking -> stringResource(R.string.speaking_with_user)
+                    else -> partial.ifBlank {
+                        stringResource(R.string.speak_now)
+                    }
                 },
                 style = MaterialTheme.typography.headlineSmall
             )
