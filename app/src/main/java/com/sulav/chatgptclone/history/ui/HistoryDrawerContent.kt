@@ -68,7 +68,7 @@ fun HistoryDrawerContent(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = Small)
+                .padding(Small)
         ) {
             Text(stringResource(R.string.use_live_llm))
             Spacer(Modifier.weight(1f))
@@ -92,7 +92,5 @@ fun HistoryDrawerContent(
                 }
             }
         }
-
-
     }
 }

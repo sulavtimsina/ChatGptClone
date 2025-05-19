@@ -13,6 +13,10 @@ val Medium = 16.dp
 val Large = 24.dp
 val ExtraLarge = 32.dp
 
-val ShimmerHeight = 20.dp
+
+val ShimmerBoxHeight = 40.dp
+val ShimmerBoxWidth = 120.dp
 val OutlinedButtonSize = 48.dp
+
+val ShimmerHeight = 20.dp
 val ShimmerWidth = 80.dp

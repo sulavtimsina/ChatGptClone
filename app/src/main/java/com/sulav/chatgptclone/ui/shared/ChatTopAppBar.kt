@@ -10,7 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.sulav.chatgptclone.R
 import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -23,7 +25,7 @@ fun ChatTopAppBar(
         title = { Text(title) },
         navigationIcon = {
             IconButton(onClick = onMenu) {
-                Icon(Icons.Default.Menu, contentDescription = "Menu")
+                Icon(Icons.Default.Menu, contentDescription = stringResource(R.string.a11y_menu))
             }
         },
         modifier = Modifier

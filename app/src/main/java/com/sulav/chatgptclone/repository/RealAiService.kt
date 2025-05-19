@@ -1,28 +1,39 @@
 package com.sulav.chatgptclone.repository
 
+import android.R.attr.apiKey
 import com.sulav.chatgptclone.BuildConfig
-import kotlinx.coroutines.flow.*
-import kotlinx.serialization.json.*
-import okhttp3.*
-import okio.BufferedSource
 import com.sulav.chatgptclone.model.Message
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.addJsonObject
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okio.BufferedSource
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.text.Charsets.UTF_8
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
 
 @Singleton
 class RealAiService @Inject constructor() : AiService {
 
+    //    TODO: I will provide this OPENAI_API_KEY in a separate file in dropbox, you can either put it in local.properties file or here directly.
     private val apiKey = BuildConfig.OPENAI_API_KEY
     private val client = OkHttpClient()
     private val json    = Json { ignoreUnknownKeys = true }
 
     override fun streamReplyWithHistory(history: List<Message>): Flow<String> = flow {
-        /* 1️⃣ Build OpenAI chat request JSON */
         val messagesJson = buildJsonArray {
             history.forEach {
                 addJsonObject {
@@ -43,7 +54,6 @@ class RealAiService @Inject constructor() : AiService {
         val reqBody = json.encodeToString(JsonObject.serializer(), bodyJson)
             .toRequestBody("application/json".toMediaType())
 
-        /* 2️⃣ Build and execute HTTP request */
         val request = Request.Builder()
             .url("https://api.openai.com/v1/chat/completions")
             .addHeader("Authorization", "Bearer $apiKey")
@@ -55,7 +65,6 @@ class RealAiService @Inject constructor() : AiService {
 
             val src: BufferedSource = resp.body!!.source()
 
-            /* 3️⃣ Read SSE lines -> emit content tokens */
             while (!src.exhausted()) {
                 val line = src.readUtf8Line() ?: continue
                 if (!line.startsWith("data: ")) continue           // skip keep-alive

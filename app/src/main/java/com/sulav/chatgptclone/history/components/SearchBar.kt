@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.sulav.chatgptclone.R
 import com.sulav.chatgptclone.ui.theme.Small
 
 @Composable
@@ -24,14 +26,16 @@ fun SearchBarWithPencil(
     onPencilClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(Small),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(Small),
         verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(
             value = query,
             onValueChange = onQueryChange,
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            placeholder = { Text("Search") },
+            placeholder = { Text(stringResource(R.string.search)) },
             singleLine = true,
             modifier = Modifier.weight(1f)
         )
@@ -41,7 +45,7 @@ fun SearchBarWithPencil(
         IconButton(onClick = onPencilClick) {
             Icon(
                 Icons.Default.Edit,
-                contentDescription = "Edit Search"
+                contentDescription = stringResource(R.string.a11y_new_conversation)
             )
         }
     }

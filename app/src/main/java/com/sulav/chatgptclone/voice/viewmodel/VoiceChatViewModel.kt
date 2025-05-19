@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.viewmodel
+package com.sulav.chatgptclone.voice.viewmodel
 
 import android.app.Application
 import android.content.Intent
@@ -102,7 +102,7 @@ class VoiceChatViewModel @Inject constructor(
     private fun processUserUtterance(userText: String) {
         viewModelScope.launch {
             if (!net.isOnline.first()) {
-                _events.emit(UiEvent.Snackbar("No internet – try later"))
+                _events.emit(UiEvent.SnackBar("No internet – try later"))
                 _phase.value = Phase.Ready
                 restartListening()
                 return@launch
@@ -129,7 +129,7 @@ class VoiceChatViewModel @Inject constructor(
                     restartListening()
                 }
             } catch (e: Exception) {                      // ← handles no-internet or others
-                _events.emit(UiEvent.Snackbar("Network error – try again when online"))
+                _events.emit(UiEvent.SnackBar("Network error – try again when online"))
                 _phase.value = Phase.Ready
                 restartListening()
             }

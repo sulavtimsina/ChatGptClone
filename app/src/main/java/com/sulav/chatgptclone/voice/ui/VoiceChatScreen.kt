@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.voice
+package com.sulav.chatgptclone.voice.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,7 +32,7 @@ import com.sulav.chatgptclone.R
 import com.sulav.chatgptclone.permissions.RequireRecordAudio
 import com.sulav.chatgptclone.ui.shared.UiEvent
 import com.sulav.chatgptclone.ui.theme.ExtraLarge
-import com.sulav.chatgptclone.viewmodel.VoiceChatViewModel
+import com.sulav.chatgptclone.voice.viewmodel.VoiceChatViewModel
 import com.sulav.chatgptclone.voice.components.VoiceIndicator
 import com.sulav.chatgptclone.voice.components.VoiceIndicatorMode
 import kotlinx.coroutines.launch
@@ -50,7 +50,7 @@ fun VoiceChatScreen(
     LaunchedEffect(Unit) {
         viewModel.events.collect { ev ->
             when (ev) {
-                is UiEvent.Snackbar -> snackbarHost.showSnackbar(ev.message)
+                is UiEvent.SnackBar -> snackbarHost.showSnackbar(ev.message)
             }
         }
     }

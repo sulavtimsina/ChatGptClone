@@ -35,15 +35,10 @@ class FakeAiService : AiService {
         sendAndStreamReply()
 
     private fun sendAndStreamReply(): Flow<String> = flow {
-        /* 0️⃣ simulate thinking latency */
         delay(400)
 
-        /* 1️⃣ compose synthetic answer */
         val body = samples.random()
-
-        /* 2️⃣ split into ~5-char chunks to mimic token streaming */
         val tokens = body.chunked(5)
-
         tokens.forEach { chunk ->
             emit(chunk)
             delay(Random.nextLong(120, 260))   // variable cadence

@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.sulav.chatgptclone.chat.ui.ChatScreen
-import com.sulav.chatgptclone.voice.VoiceChatScreen
+import com.sulav.chatgptclone.voice.ui.VoiceChatScreen
 
 object Destinations {
     const val CHAT = "chat"

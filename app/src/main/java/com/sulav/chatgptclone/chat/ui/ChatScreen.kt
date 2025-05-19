@@ -13,8 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -70,15 +68,15 @@ fun ChatScreen(
     val ctx = LocalContext.current
     val err by viewModel.error.collectAsState()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     LaunchedEffect(err) {
         err?.let {
             val msg = when (it) {
-                UiError.NoInternet -> "No internet. Message saved; will retry."
+                UiError.NoInternet -> ctx.getString(R.string.no_internet_message)
                 is UiError.Generic -> it.msg
             }
-            snackbarHostState.showSnackbar(msg)
-            viewModel.clearError()                                 // reset in VM
+            snackBarHostState.showSnackbar(msg)
+            viewModel.clearError()
         }
     }
 
@@ -92,7 +90,7 @@ fun ChatScreen(
         onVoiceClicked = { navController.navigate(Destinations.VOICE) },
         onCopy = { ClipboardHelper.copy(ctx, it) },
         onPlay = { viewModel.ttsHelper.speak(it) {} },
-        snackbarHostState = snackbarHostState
+        snackBarHostState = snackBarHostState
     )
 }
 
@@ -107,7 +105,7 @@ fun ChatContent(
     onVoiceClicked: () -> Unit,
     onCopy: (String) -> Unit,
     onPlay: (String) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -127,7 +125,7 @@ fun ChatContent(
                     scope.launch { drawerState.open() }
                 }
             },
-            snackbarHost = { SnackbarHost(snackbarHostState) },
+            snackbarHost = { SnackbarHost(snackBarHostState) },
             bottomBar = {
                 BottomInputBar(
                     text = input,
@@ -180,7 +178,7 @@ private fun BottomInputBar(
             modifier = Modifier
                 .weight(1f)
                 .focusRequester(focusRequester)
-                .verticalScroll(scrollState), // enable scroll when text exceeds 10 lines
+                .verticalScroll(scrollState),
             placeholder = {
                 Text(
                     stringResource(
@@ -188,13 +186,13 @@ private fun BottomInputBar(
                     )
                 )
             },
-            maxLines = 10, // grow up to 10 lines
+            maxLines = 10,
             singleLine = false,
         )
 
         IconButton(onClick = onSend) {
             Icon(
-                imageVector = Icons.Default.Send,
+                painterResource(id = R.drawable.outline_send_24),
                 contentDescription = stringResource(R.string.send)
             )
         }

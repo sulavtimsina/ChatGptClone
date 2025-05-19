@@ -1,4 +1,5 @@
 package com.sulav.chatgptclone.utils
+
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -18,11 +19,16 @@ class NetworkMonitor @Inject constructor(@ApplicationContext ctx: Context) {
         fun current() = cm.activeNetwork?.let { n ->
             cm.getNetworkCapabilities(n)
                 ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
-        } ?: false
+        } == true
         trySend(current())
         val cb = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network)  { trySend(true) }
-            override fun onLost(network: Network)       { trySend(false) }
+            override fun onAvailable(network: Network) {
+                trySend(true)
+            }
+
+            override fun onLost(network: Network) {
+                trySend(false)
+            }
         }
         cm.registerNetworkCallback(NetworkRequest.Builder().build(), cb)
         awaitClose { cm.unregisterNetworkCallback(cb) }

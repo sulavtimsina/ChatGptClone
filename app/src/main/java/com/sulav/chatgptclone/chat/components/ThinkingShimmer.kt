@@ -28,12 +28,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
+import com.sulav.chatgptclone.ui.theme.ShimmerBoxHeight
+import com.sulav.chatgptclone.ui.theme.ShimmerBoxWidth
+import com.sulav.chatgptclone.ui.theme.ShimmerHeight
 
 @Composable
 fun ThinkingShimmer() {
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
 
-    // Create a shimmer effect that moves across the bubble
     val translateAnim by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1000f,
@@ -44,7 +46,6 @@ fun ThinkingShimmer() {
         label = "shimmerTranslate"
     )
 
-    // Add a pulsing effect
     val pulseAnim by infiniteTransition.animateFloat(
         initialValue = 0.7f,
         targetValue = 1f,
@@ -55,18 +56,16 @@ fun ThinkingShimmer() {
         label = "shimmerPulse"
     )
 
-    // Create a speech bubble shape with dots
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(16.dp)
     ) {
-        // Speech bubble with shimmer effect
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(width = 120.dp, height = 40.dp)
+                .size(width = ShimmerBoxWidth, height = ShimmerBoxHeight)
                 .scale(pulseAnim)
-                .clip(RoundedCornerShape(20.dp))
+                .clip(RoundedCornerShape(ShimmerHeight))
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
@@ -79,13 +78,11 @@ fun ThinkingShimmer() {
                     )
                 )
         ) {
-            // Three dots in a row representing "thinking"
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 repeat(3) { index ->
-                    // Add a slight delay to each dot's animation
                     val dotScale by infiniteTransition.animateFloat(
                         initialValue = 0.6f,
                         targetValue = 1f,

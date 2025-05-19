@@ -12,4 +12,8 @@
     <string name="use_live_llm">Use Live LLM</string>
     <string name="a11y_play_message">play message</string>
     <string name="a11y_copy_message_to_clipboard">copy message to clipboard</string>
+    <string name="no_internet_message">No internet. Message saved; will retry.</string>
+    <string name="a11y_new_conversation">start new conversation</string>
+    <string name="search">Search</string>
+    <string name="a11y_menu">Menu</string>
 </resources>

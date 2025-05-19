@@ -65,10 +65,9 @@ git clone https://github.com/<you>/ChatGPTClone.git
 
 Create (or append) local.properties:
 
-properties
-Copy
-Edit
+```properties
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
 
 3. **Run**
 
@@ -103,14 +102,3 @@ Open the drawer ➜ switch “Use Live LLM”.
 📄 License
 Apache License 2.0
 Built with ❤️ by Sulav Timsina
-
----
-
-### Last-minute review tips 🕵️‍♂️
-
-1. **Run the Release build** on a physical device; confirm no offline crashes.  
-2. Scan **`git status`** for stray debug logs or secrets.  
-3. Generate **screenshots** (dark & light) and drop them in `docs/screens/`.  
-4. Push a clean commit history (`main` or `submit` branch).  
-5. Include this `README.md` at repository root.
-

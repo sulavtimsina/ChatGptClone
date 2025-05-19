@@ -29,26 +29,22 @@ class ChatViewModel @Inject constructor(
     @Inject
     lateinit var ttsHelper: TextToSpeechHelper
 
-    /* ------------ reactive conversation id ------------- */
     private val _convId =
         MutableStateFlow<Long?>(savedState.get<Long>("conversationId")?.takeIf { it >= 0 })
     private val convId: StateFlow<Long?> get() = _convId
 
-    /* ------------ input field ------------- */
     private val _input = MutableStateFlow("")
     val input: StateFlow<String> = _input
     fun onInputChange(t: String) {
         _input.value = t
     }
 
-    /* ------------ thinking flag ------------- */
     private val _isThinking = MutableStateFlow(false)
     val isThinking: StateFlow<Boolean> = _isThinking
 
     private val _error = MutableStateFlow<UiError?>(null)
     val error: StateFlow<UiError?> = _error
 
-    /* ------------ live messages ------------- */
     val messages: StateFlow<List<Message>> = convId
         .flatMapLatest { id ->
             if (id == null) flowOf(emptyList())
@@ -56,7 +52,6 @@ class ChatViewModel @Inject constructor(
         }
         .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000), emptyList())
 
-    /* ------------ send ------------- */
     fun onSendClicked() {
         val text = _input.value.trim()
         if (text.isEmpty()) return

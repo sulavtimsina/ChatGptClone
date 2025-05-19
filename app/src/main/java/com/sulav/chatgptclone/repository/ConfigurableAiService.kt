@@ -1,10 +1,10 @@
 package com.sulav.chatgptclone.repository
 
-import android.R.attr.prompt
 import com.sulav.chatgptclone.data.AppSettings
 import com.sulav.chatgptclone.model.Message
-import kotlinx.coroutines.flow.*
-
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.take
 import javax.inject.Inject
 import javax.inject.Singleton
 

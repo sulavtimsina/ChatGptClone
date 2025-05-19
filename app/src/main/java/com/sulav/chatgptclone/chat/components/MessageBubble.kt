@@ -27,6 +27,7 @@ fun MessageBubble(
                 MarkdownMessage(message.content)
             else
                 Text(message.content)
+
             if (message.role == Message.Role.ASSISTANT) {
                 MessageActions(onCopy = onCopy, onPlay = onPlay)
             }
