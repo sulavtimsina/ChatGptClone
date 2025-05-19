@@ -6,7 +6,7 @@
 
 | Home (text) | Voice mode | History drawer |
 |---|---|---|
-| ![](docs/screens/chat_light.png) | ![](docs/screens/voice_dark.png) | ![](docs/screens/history_light.png) |
+| ![image](https://github.com/user-attachments/assets/7cd4c2bb-1b2a-4708-95c1-8c1bcb63d34c)| ![image](https://github.com/user-attachments/assets/e728f565-3a5c-47bd-b5ac-d1f983f62329)| ![image](https://github.com/user-attachments/assets/8c068e82-c703-4ee2-9f38-c34a1d2c27eb)|
 
 ---
 
