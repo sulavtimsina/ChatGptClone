@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.history
+package com.sulav.chatgptclone.history.ui
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,45 +19,54 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.sulav.chatgptclone.ui.history.HistoryDrawerContent
-import com.sulav.chatgptclone.ui.history.components.ConversationItem
-import com.sulav.chatgptclone.ui.history.components.SearchBarWithPencil
-import com.sulav.chatgptclone.ui.navigation.Destinations
-import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
-import com.sulav.chatgptclone.viewmodel.HistoryViewModel
-import com.sulav.chatgptclone.viewmodel.SettingsViewModel
-
-//@Composable
-//fun HistoryDrawerScreen(
-//    vm: HistoryViewModel = hiltViewModel(),
-//    settingsViewModel: SettingsViewModel = hiltViewModel(),
-//    onConversationClick: (Long) -> Unit
-//) {
-//    HistoryDrawerContent(vm, settingsViewModel, onConversationClick)
-//}
+import com.sulav.chatgptclone.history.components.ConversationItem
+import com.sulav.chatgptclone.history.components.SearchBarWithPencil
+import com.sulav.chatgptclone.history.viewmodel.HistoryViewModel
+import com.sulav.chatgptclone.model.Conversation
+import com.sulav.chatgptclone.navigation.Destinations
 
 @Composable
-fun HistoryDrawerContent(
+fun HistoryDrawerScreen(
     navController: NavController,
-    vm: HistoryViewModel = hiltViewModel(),
-    settingsViewModel: SettingsViewModel = hiltViewModel(),
-    onConversationClick: (Long) -> Unit,
+    viewModel: HistoryViewModel = hiltViewModel(),
+    onConversationClick: (Long) -> Unit
 ) {
-    val useReal by settingsViewModel.settings.useRealAi.collectAsState(initial = false)
-    var query by remember { mutableStateOf("") }
-    val conversations by vm.conversations.collectAsState(initial = emptyList())
-    ModalDrawerSheet()
-    {
-        SearchBarWithPencil(query = query, onQueryChange = { query = it }, onPencilClick = {
+    val conversations by viewModel.conversations.collectAsState(emptyList())
+    val useReal by viewModel.useRealAi.collectAsState(false)
+
+    HistoryDrawerContent(
+        conversations = conversations,
+        useReal = useReal,
+        onUseRealChange = viewModel::setUseReal,
+        navigateToChat = {
             navController.navigate(
                 Destinations.CHAT
             )
-        })
+        },
+        onConversationClick = onConversationClick
+    )
+}
+
+@Composable
+fun HistoryDrawerContent(
+    conversations: List<Conversation>,
+    useReal: Boolean,
+    onUseRealChange: (Boolean) -> Unit,
+    navigateToChat: () -> Unit,
+    onConversationClick: (Long) -> Unit,
+) {
+    var query by remember { mutableStateOf("") }
+    ModalDrawerSheet()
+    {
+        SearchBarWithPencil(
+            query = query,
+            onQueryChange = { query = it },
+            onPencilClick = {
+                navigateToChat()
+            })
         Spacer(Modifier.height(16.dp))
         LazyColumn(modifier = Modifier.fillMaxHeight()) {
             items(conversations.filter { it.title.contains(query, true) }) { conv ->
@@ -77,19 +86,8 @@ fun HistoryDrawerContent(
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = useReal,
-                onCheckedChange = { settingsViewModel.setUseReal(it) }
+                onCheckedChange = onUseRealChange
             )
         }
     }
 }
-//
-//@Preview
-//@Composable
-//fun HistoryDrawerContentPreview() {
-//    ChatGPTCloneTheme {
-//        val navController = rememberNavController()
-//        HistoryDrawerContent(navController = navController)(
-//            onConversationClick = {}
-//        )
-//    }
-//}

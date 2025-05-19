@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.chat
+package com.sulav.chatgptclone.chat.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,58 +35,83 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sulav.chatgptclone.R
-import com.sulav.chatgptclone.ui.chat.components.MessageBubble
-import com.sulav.chatgptclone.ui.chat.components.ThinkingShimmer
-import com.sulav.chatgptclone.ui.history.HistoryDrawerContent
-import com.sulav.chatgptclone.ui.navigation.Destinations
+import com.sulav.chatgptclone.model.Message
+import com.sulav.chatgptclone.chat.components.MessageBubble
+import com.sulav.chatgptclone.chat.components.ThinkingShimmer
+import com.sulav.chatgptclone.history.ui.HistoryDrawerContent
+import com.sulav.chatgptclone.navigation.Destinations
 import com.sulav.chatgptclone.ui.shared.ChatTopAppBar
 import com.sulav.chatgptclone.ui.theme.ChatGPTCloneTheme
 import com.sulav.chatgptclone.utils.ClipboardHelper
-import com.sulav.chatgptclone.viewmodel.ChatViewModel
+import com.sulav.chatgptclone.chat.viewmodel.ChatViewModel
+import com.sulav.chatgptclone.history.ui.HistoryDrawerScreen
 import kotlinx.coroutines.launch
 
 @Composable
 fun ChatScreen(
     navController: NavController,
-    vm: ChatViewModel = hiltViewModel()
+    viewModel: ChatViewModel = hiltViewModel()
+) {
+    val input by viewModel.input.collectAsState()
+    val messages by viewModel.messages.collectAsState()
+    val thinking by viewModel.isThinking.collectAsState()
+    val ctx = LocalContext.current
+
+    ChatContent(
+        navController = navController,
+        input = input,
+        messages = messages,
+        isThinking = thinking,
+        onInputChange = viewModel::onInputChange,
+        onSendClicked = viewModel::onSendClicked,
+        onVoiceClicked = { navController.navigate(Destinations.VOICE) },
+        onCopy = { ClipboardHelper.copy(ctx, it) },
+        onPlay = { viewModel.ttsHelper.speak(it) {} }
+    )
+}
+
+@Composable
+fun ChatContent(
+    navController: NavController,
+    input: String,
+    messages: List<Message>,
+    isThinking: Boolean,
+    onInputChange: (String) -> Unit,
+    onSendClicked: () -> Unit,
+    onVoiceClicked: () -> Unit,
+    onCopy: (String) -> Unit,
+    onPlay: (String) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val ctx = LocalContext.current
-
-    val input by vm.input.collectAsState()
-    val msgs by vm.messages.collectAsState()
-    val thinking by vm.isThinking.collectAsState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            HistoryDrawerContent(navController) { convId ->
+            HistoryDrawerScreen(navController) { convId ->
                 scope.launch { drawerState.close() }
-                navController.navigate("chat?conversationId=$convId") // same route with arg
+                navController.navigate("chat?conversationId=$convId")
             }
         }
     ) {
         Scaffold(
             topBar = {
-                ChatTopAppBar(
-                    title = "ChatGPT"
-                ) { scope.launch { drawerState.open() } }
+                ChatTopAppBar(title = "ChatGPT") {
+                    scope.launch { drawerState.open() }
+                }
             },
             bottomBar = {
                 BottomInputBar(
                     text = input,
-                    onTextChange = vm::onInputChange,
-                    onSend = vm::onSendClicked,
-                    onVoiceClicked = { navController.navigate(Destinations.VOICE) }
+                    onTextChange = onInputChange,
+                    onSend = onSendClicked,
+                    onVoiceClicked = onVoiceClicked
                 )
             }
         ) { inner ->
-            val viewModelStoreOwner = LocalViewModelStoreOwner.current
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -94,16 +119,12 @@ fun ChatScreen(
                 contentPadding = PaddingValues(16.dp),
                 reverseLayout = true
             ) {
-                if (thinking) item { ThinkingShimmer() }
-                items(msgs) { m ->
+                if (isThinking) item { ThinkingShimmer() }
+                items(messages) { message ->
                     MessageBubble(
-                        message = m,
-                        onCopy = { ClipboardHelper.copy(ctx, m.content) },
-                        onPlay = {
-                            viewModelStoreOwner?.let {
-                                vm.ttsHelper.speak(m.content) {}
-                            }
-                        }
+                        message = message,
+                        onCopy = { onCopy(message.content) },
+                        onPlay = { onPlay(message.content) }
                     )
                     Spacer(Modifier.height(8.dp))
                 }
@@ -111,6 +132,7 @@ fun ChatScreen(
         }
     }
 }
+
 
 @Composable
 private fun BottomInputBar(

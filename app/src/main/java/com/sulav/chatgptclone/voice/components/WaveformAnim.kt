@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.voice.components
+package com.sulav.chatgptclone.voice.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import kotlin.math.min
 
@@ -24,8 +25,8 @@ fun WaveformAnim(amplitude: Float) {
             val h = min(amp.value / 10f, 1f) * size.height / 2
             drawLine(
                 Color.White,
-                start = androidx.compose.ui.geometry.Offset(x, midY - h),
-                end = androidx.compose.ui.geometry.Offset(x, midY + h),
+                start = Offset(x, midY - h),
+                end = Offset(x, midY + h),
                 strokeWidth = 6f
             )
             x += step

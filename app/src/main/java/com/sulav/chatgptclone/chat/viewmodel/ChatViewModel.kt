@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.viewmodel
+package com.sulav.chatgptclone.chat.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -7,7 +7,12 @@ import com.sulav.chatgptclone.model.Message
 import com.sulav.chatgptclone.repository.ConversationRepository
 import com.sulav.chatgptclone.utils.TextToSpeechHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,10 +21,12 @@ class ChatViewModel @Inject constructor(
     private val repo: ConversationRepository,
     savedState: SavedStateHandle
 ) : ViewModel() {
-    @Inject lateinit var ttsHelper: TextToSpeechHelper
+    @Inject
+    lateinit var ttsHelper: TextToSpeechHelper
 
     /* ------------ reactive conversation id ------------- */
-    private val _convId = MutableStateFlow<Long?>(savedState.get<Long>("conversationId")?.takeIf { it >= 0 } )
+    private val _convId =
+        MutableStateFlow<Long?>(savedState.get<Long>("conversationId")?.takeIf { it >= 0 })
     private val convId: StateFlow<Long?> get() = _convId
 
     /* ------------ input field ------------- */
@@ -37,7 +44,7 @@ class ChatViewModel @Inject constructor(
             if (id == null) flowOf(emptyList())
             else repo.messages(id)
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5_000), emptyList())
 
     /* ------------ send ------------- */
     fun onSendClicked() {

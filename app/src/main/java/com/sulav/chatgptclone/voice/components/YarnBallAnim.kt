@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.voice.components
+package com.sulav.chatgptclone.voice.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat

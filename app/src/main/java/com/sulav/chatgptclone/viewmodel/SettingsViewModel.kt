@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(val settings: AppSettings) : ViewModel() {
+class SettingsViewModel1 @Inject constructor(val settings: AppSettings) : ViewModel() {
     fun setUseReal(value: Boolean) = viewModelScope.launch {
         settings.setUseRealAi(value)
     }

@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.chat.components
+package com.sulav.chatgptclone.chat.components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode

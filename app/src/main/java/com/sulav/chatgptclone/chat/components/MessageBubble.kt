@@ -1,9 +1,10 @@
-package com.sulav.chatgptclone.ui.chat.components
+package com.sulav.chatgptclone.chat.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,7 +26,7 @@ fun MessageBubble(
             if (message.role == Message.Role.ASSISTANT)
                 MarkdownMessage(message.content)
             else
-                androidx.compose.material3.Text(message.content)
+                Text(message.content)
             if (message.role == Message.Role.ASSISTANT) {
                 MessageActions(onCopy = onCopy, onPlay = onPlay)
             }

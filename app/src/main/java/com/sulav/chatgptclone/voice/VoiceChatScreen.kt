@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.voice
+package com.sulav.chatgptclone.voice
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,23 +26,28 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sulav.chatgptclone.permissions.RequireRecordAudio
-import com.sulav.chatgptclone.ui.voice.components.VoiceIndicator
-import com.sulav.chatgptclone.ui.voice.components.VoiceIndicatorMode
+import com.sulav.chatgptclone.voice.components.VoiceIndicator
+import com.sulav.chatgptclone.voice.components.VoiceIndicatorMode
 import com.sulav.chatgptclone.viewmodel.VoiceChatViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun VoiceChatScreen(
     navController: NavController,
-    vm: VoiceChatViewModel = hiltViewModel()
+    viewModel: VoiceChatViewModel = hiltViewModel()
 ) {
-    val phase by vm.phase.collectAsState()
-    val partial by vm.partial.collectAsState()
+    val phase by viewModel.phase.collectAsState()
+    val partial by viewModel.partial.collectAsState()
 
     RequireRecordAudio(
         onGranted = {
-            LaunchedEffect(Unit) { vm.startListening() }
-            ScreenContent(navController, partial, phase) { vm.stop() }
+            LaunchedEffect(Unit) { viewModel.startListening() }
+            VoiceScreenContent(
+                partial = partial,
+                phase = phase,
+                navigateBack = { navController.popBackStack() },
+                onStop = { viewModel.stop() }
+            )
         },
         onDenied = { Text("Microphone permission denied") }
     )
@@ -50,10 +55,10 @@ fun VoiceChatScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ScreenContent(
-    navController: NavController,
+private fun VoiceScreenContent(
     partial: String,
     phase: VoiceChatViewModel.Phase,
+    navigateBack: () -> Unit,
     onStop: () -> Unit
 ) {
     val isActive = phase == VoiceChatViewModel.Phase.UserSpeaking
@@ -67,8 +72,11 @@ private fun ScreenContent(
                 title = { Text("Voice chat") },
                 navigationIcon = {
                     IconButton(onClick = {
-                        onStop(); scope.launch { navController.popBackStack() }
-                    }) { Icon(Icons.Default.Close, null) }
+                        onStop()
+                        scope.launch { navigateBack() }
+                    }) {
+                        Icon(Icons.Default.Close, null)
+                    }
                 }
             )
         }

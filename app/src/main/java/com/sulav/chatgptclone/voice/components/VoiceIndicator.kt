@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.voice.components
+package com.sulav.chatgptclone.voice.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOutCubic
@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
@@ -226,7 +227,7 @@ fun VoiceIndicator(
                 if (curveFactor > 0) {
                     // Draw with some curve (for yarn ball mode or during transition)
                     drawPath(
-                        path = androidx.compose.ui.graphics.Path().apply {
+                        path = Path().apply {
                             moveTo(lineStart.x, lineStart.y)
                             // Reduce the control point influence during transition
                             val adjustedControl = Offset(

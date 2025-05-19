@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.history.components
+package com.sulav.chatgptclone.history.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

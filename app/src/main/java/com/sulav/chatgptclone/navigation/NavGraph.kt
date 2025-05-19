@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.navigation
+package com.sulav.chatgptclone.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,8 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.sulav.chatgptclone.ui.chat.ChatScreen
-import com.sulav.chatgptclone.ui.voice.VoiceChatScreen
+import com.sulav.chatgptclone.chat.ui.ChatScreen
+import com.sulav.chatgptclone.voice.VoiceChatScreen
 
 object Destinations {
     const val CHAT = "chat"

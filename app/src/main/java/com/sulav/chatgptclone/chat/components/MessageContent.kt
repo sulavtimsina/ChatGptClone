@@ -1,4 +1,4 @@
-package com.sulav.chatgptclone.ui.chat.components
+package com.sulav.chatgptclone.chat.components
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
